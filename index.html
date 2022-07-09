@@ -14,7 +14,7 @@
 <body>
   <h1 class="text-center p-3 m-3">Weather App</h1>
   <div class="container-fluid row row-cols-2 m-0 p-0">
-    <div class="searchBar col-4 m-3">
+    <div class="searchBar col-2 m-3">
         <h2>Search For a City</h2>
         <form id="searchForm">
             <div class="form-group">
@@ -23,12 +23,13 @@
             <button type="submit" class="btn btn-primary searchBtn">Search</button>    
         </form>
     </div>
-    <div class="weatherDisplay col-7 row row-cols-1 m-3">
+    <div class="weatherDisplay col-9 row row-cols-1 m-3">
         <div class="currWeather card">
             <h2 class="weathHead card-title"></h2>
         </div>
-        <div class="forecast card mt-3">
+        <div class="forecastSect card mt-3">
             <h2 class="foreHead card-title">5 Day Forecast:</h2>
+            <div class="forecast row row-cols-6"></div>
         </div>
 
     </div>

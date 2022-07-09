@@ -1,0 +1,14 @@
+h1 {
+    background-image: linear-gradient(to right, rgb(77, 77, 255), rgb(0, 6, 92));
+    color: white;
+}
+
+body {
+    background-color: rgb(172, 172, 255);
+}
+
+.dayCard {
+    background-color: rgb(49, 40, 100);
+    color: white;
+    margin: 2px;
+}
