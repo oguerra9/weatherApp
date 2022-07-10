@@ -1,44 +1,88 @@
-//var weathHeadEl = $('.weathHead');
-//var searchBtnEl = $('.searchBtn');
+var bodyEl = document.querySelector('body');
 var weathHeadEl = document.querySelector('.weathHead');
 var searchBtnEl = document.querySelector('.searchBtn');
 var weatherDisplayEl = document.querySelector('.weatherDisplay');
 var currWeathEl = document.querySelector('.currWeather');
 var forecastEl = document.querySelector('.forecast');
+var backImageEl = document.querySelector('.backImage');
+var searchFormEl = document.getElementById('searchForm');
+var cityInputEl = document.getElementById('cityInput');
+var weathInfoEl = document.querySelector('.weathInfo');
+var pastSearchesEl = document.querySelector('.pastSearches');
 
 var searchCity = ''; //get value from search bar form
 var weatherKey = '7b1fd29f4dfe960f408499a3ed912ad0';
 var weatherLink = 'https://api.openweathermap.org/data/2.5/weather?q=' + searchCity + '&appid=' + weatherKey + '&units=imperial';
 
 
-searchCityTest = 'Atlanta';
-weatherLinkTest = 'https://api.openweathermap.org/data/2.5/weather?q=' + searchCityTest + '&appid=' + weatherKey + '&units=imperial';
-var weathHeadTxt = document.createElement('h2');
-weathHeadTxt.textContent = searchCityTest;
-weathHeadEl.appendChild(weathHeadTxt);
-// var iconUrl = 'http://openweathermap.org/img/w/04n.png';
-// var iconImg = document.createElement('img');
-// iconImg.setAttribute('src',iconUrl);
-// weathHeadEl.appendChild(iconImg);
+searchCityStart = 'Atlanta';
+weatherLinkStart = 'https://api.openweathermap.org/data/2.5/weather?q=' + searchCityStart + '&appid=' + weatherKey + '&units=imperial';
 
-getWeather(weatherLinkTest);
-console.log (searchCityTest);
+weathHeadEl.textContent = searchCityStart;
+
+getWeather(searchCityStart);
+console.log (searchCityStart);
+pastSearchesEl.innerHTML = '';
+displayCities();
 
 
+var cities = [];
 
-function searchCity () {
 
-    searchCity = $('#searchForm :input');
-    weathHeadEl.text(searchCity + ' ' + moment());
-    getWeather(weatherLink);
-    console.log (searchCity);
-    console.log(getWeather(weatherLink));
-    weathHeadEl.textContent = searchCity;
+function citySearch(event) {
 
+    event.preventDefault();
+    searchCity = cityInputEl.value;
+
+    //loading new searched city into local storage
+    if ( localStorage.getItem('cities') == null ) {
+        cities = [searchCity];
+    }
+    else {
+        cities = JSON.parse(localStorage.getItem('cities'));
+        cities.unshift(searchCity);
+    }
+    //max 5 past searches displayed at once
+    if (cities.length > 5) {
+        cities.pop();
+    }
+    localStorage.setItem('cities', JSON.stringify(cities));
+
+    getWeather(searchCity);
 }
 
+function displayCities() {
+    if ( localStorage.getItem('cities') == null) {
+        return;
+    }
+    else {
+        cities = JSON.parse(localStorage.getItem('cities'));
+        for (var i = 0; i < cities.length; i++) {
+            var cityBtn = document.createElement('button');
+            cityBtn.className = 'pastBtn';
+            cityBtn.innerHTML = cities[i];
+            pastSearchesEl.appendChild(cityBtn);
 
-function getWeather (weatherLink) {
+        }
+    }
+}
+
+pastSearchesEl.addEventListener("click", function(event) {
+    var element = event.target;
+    getWeather(element.innerHTML);
+});
+
+
+function getWeather (cityName) {
+    weathHeadEl.innerHTML = '';
+    weathInfoEl.innerHTML = '';
+    forecastEl.innerHTML = '';
+    pastSearchesEl.innerHTML = '';
+    weathHeadEl.textContent = cityName;
+    weatherLink = 'https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&appid=' + weatherKey + '&units=imperial';
+    displayCities();
+
+    console.log(cityName);
     fetch(weatherLink)
         .then(function (response) {
             console.log(response);
@@ -57,11 +101,57 @@ function getWeather (weatherLink) {
 function displayCurrWeather (data) {
     var currDate = new Date(data.dt * 1000);
     var dateLine = currDate.getMonth() + '/' + currDate.getDate() + '/' + currDate.getFullYear();
-    weathHeadTxt.textContent += ' (' + dateLine + ')';
+    // weathHeadTxt.textContent += ' (' + dateLine + ')';
+    weathHeadEl.textContent += ' (' + dateLine + ')  ';
     //var weathDate = document.createElement('h2');
     //weathDate.textContent = dateLine;
     //weatherDisplayEl.appendChild(weathDate);
     console.log(dateLine);
+
+    var weatherType = data.weather[0].main;
+    console.log(weatherType);
+    if (weatherType == "Mist") {
+        console.log('mist success');
+        //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
+        backImageEl.setAttribute('src','assets/images/mist.png');
+        //bodyEl.className = 'misty';
+    }
+    if (weatherType == 'Thunderstorm') {
+        console.log('thunderstorm success');
+        //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
+        backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
+    }
+    if (weatherType == 'Clouds') {
+        var cloudDescript = data.weather[0].description;
+        if (cloudDescript == 'few clouds') {
+            backImageEl.setAttribute('src','assets/images/few-clouds.png');
+        }
+        if (cloudDescript == 'scattered clouds') {
+            backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
+        }
+        if (cloudDescript == 'broken clouds') {
+            backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
+        }
+        if (cloudDescript == 'overcast clouds') {
+            backImageEl.setAttribute('src','assets/images/overcast.jpg');
+        }
+    }
+    if (weatherType == 'Rain') {
+        console.log('rain success');
+        backImageEl.setAttribute('src', 'assets/images/rain2.gif');
+    }
+    if (weatherType == 'Drizzle') {
+        console.log('drizzle success');
+        backImageEl.setAttribute('src','assets/images/drizzle2.gif');
+    }
+    if (weatherType == 'Clear') {
+        console.log('clear success');
+        backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
+    }
+    if (weatherType == 'Snow') {
+        console.log('snow success');
+        backImageEl.setAttribute('src','assets/images/snow.gif');
+    }
 
     //temp
     var tempF = parseInt(data.main.temp);
@@ -69,7 +159,7 @@ function displayCurrWeather (data) {
     //display Temp
     var currTemp = document.createElement('p');
     currTemp.textContent = 'Temp: ' + tempF + ' F'; 
-    currWeathEl.appendChild(currTemp);
+    weathInfoEl.appendChild(currTemp);
     
     //wind speed
     var windSpeed = data.wind.speed;
@@ -77,7 +167,7 @@ function displayCurrWeather (data) {
     //display wind speed
     var currWind = document.createElement('p');
     currWind.textContent = 'Wind: ' + windSpeed + ' MPH'; 
-    currWeathEl.appendChild(currWind);
+    weathInfoEl.appendChild(currWind);
 
     //humidity
     var humidity = data.main.humidity;
@@ -85,7 +175,7 @@ function displayCurrWeather (data) {
     //display humidity
     var currHumidity = document.createElement('p');
     currHumidity.textContent = 'Humidity: ' + humidity + '%'; 
-    currWeathEl.appendChild(currHumidity);
+    weathInfoEl.appendChild(currHumidity);
     
     //icon
     var iconID = data.weather[0].icon;
@@ -137,7 +227,7 @@ function displayForecast (data) {
     currUVI.textContent = 'UV Index: ';
     uviValueEl.textContent = uvi;
     currUVI.appendChild(uviValueEl); 
-    currWeathEl.appendChild(currUVI);
+    weathInfoEl.appendChild(currUVI);
 
     //daily forecast
     for (var i = 1; i <= 5; i++) {
@@ -151,7 +241,7 @@ function displayForecast (data) {
         var futDateLine = futDate.getMonth() + '/' + futDate.getDate() + '/' + futDate.getFullYear();
         console.log(futDateLine);
         var foreDate = document.createElement('h4');
-        foreDate.setAttribute('class','card-title');
+        foreDate.setAttribute('class','card-title p-2 m-0');
         foreDate.textContent = futDateLine;
         dayCard.appendChild(foreDate);
 
@@ -190,5 +280,5 @@ function displayForecast (data) {
 }
 
 //getWeather(weatherLink);
-$('#searchForm').on('click', '.searchBtn', searchCity);
+searchFormEl.addEventListener('submit', citySearch);
 

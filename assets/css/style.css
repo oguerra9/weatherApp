@@ -3,12 +3,93 @@ h1 {
     color: white;
 }
 
-body {
+/* body {
     background-color: rgb(172, 172, 255);
-}
+} */
 
 .dayCard {
     background-color: rgb(49, 40, 100);
     color: white;
     margin: 2px;
 }
+/* 
+.misty {
+    background-image: '../images/mist.png';
+} */
+
+/* .searchBar {
+    background-color: white;
+} */
+
+.currWeather {
+    background-color: transparent;
+    z-index: 99; 
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+
+.forecastSect {
+    position: relative;
+    background-color: transparent;
+}
+
+.backColor {
+    background-color: white;
+    z-index: -99;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.5;
+    margin:auto;
+    
+}
+
+.pastBtn {
+    background-color: gray;
+    color: white;
+    
+}
+
+
+
+
+.weatherContent {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    z-index: 100; 
+    
+    position: absolute;
+}
+
+.backImage {
+    z-index: -100;
+    position: relative;
+   
+    opacity: 0.75;
+    width: 100%;
+    height: 100%; 
+}
+
+/* .backSpan {
+    z-index: -100;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    opacity: 0.5;
+    height: 100%;
+    width: 100%;
+}
+
+.backImage {
+    width: 100%;
+    height: 100%;
+}
+ */
+
+
