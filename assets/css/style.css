@@ -46,17 +46,21 @@ h1 {
     right: 0;
     opacity: 0.5;
     margin:auto;
-    
+    border-radius: 4px;
 }
 
 .pastBtn {
-    background-color: gray;
+    background-color: rgb(89, 89, 89);
     color: white;
-    
+    border: 0;
+    border-radius: 4px;
+    padding: 6px;
 }
 
-
-
+data {
+    border-radius: 4px;
+    padding: 2px;
+}
 
 .weatherContent {
     width: 100%;
@@ -71,7 +75,7 @@ h1 {
     z-index: -100;
     position: relative;
    
-    opacity: 0.75;
+    opacity: 0.9;
     width: 100%;
     height: 100%; 
 }

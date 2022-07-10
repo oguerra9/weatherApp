@@ -17,18 +17,18 @@
     <div class="container-fluid row row-cols-2 m-0 p-0 d-flex justify-content-around">
       <div class="searchBar d-flex flex-column col-2 ml-3 mt-3 p-3">
           <h2 class="mb-3">Search For a City</h2>
-          <form id="searchForm">
+          <form id="searchForm" class="mb-3">
               <div class="form-group">
                   <input type="text" class="form-control" id="cityInput">
               </div>
               <button type="submit" class="btn btn-primary searchBtn">Search</button>    
           </form>
-          <div class="pastSearches"></div>
+          <div class="pastSearches row row-cols-1 d-flex justify-content-center pr-3 pl-3 pb-3"></div>
           <span class="backColor"></span>
       </div>
       <div class="weatherDisplay col-9 row row-cols-1 m-3 p-0">
           <div class="currWeather card pt-3 pl-3">
-            <h2 class="weathHead card-title m-0"></h2>
+            <h2 class="weathHead card-title mb-3 d-flex justify-content-left align-items-center"></h2>
             <div class="weathInfo"></div>
             <span class="backColor"></span>
           </div>

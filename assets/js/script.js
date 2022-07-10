@@ -59,18 +59,23 @@ function displayCities() {
         cities = JSON.parse(localStorage.getItem('cities'));
         for (var i = 0; i < cities.length; i++) {
             var cityBtn = document.createElement('button');
-            cityBtn.className = 'pastBtn';
+            cityBtn.className = 'pastBtn mb-2';
             cityBtn.innerHTML = cities[i];
             pastSearchesEl.appendChild(cityBtn);
+
+            cityBtn.addEventListener("click", function(event) {
+                var element = event.target;
+                getWeather(element.innerHTML);
+            });
 
         }
     }
 }
 
-pastSearchesEl.addEventListener("click", function(event) {
-    var element = event.target;
-    getWeather(element.innerHTML);
-});
+// pastSearchesEl.addEventListener("click", function(event) {
+//     var element = event.target;
+//     getWeather(element.innerHTML);
+// });
 
 
 function getWeather (cityName) {
@@ -85,7 +90,6 @@ function getWeather (cityName) {
     console.log(cityName);
     fetch(weatherLink)
         .then(function (response) {
-            console.log(response);
             if (response.status === 200) {
                 console.log('success');
                 //responseText.textContent = response.status;
@@ -102,60 +106,110 @@ function displayCurrWeather (data) {
     var currDate = new Date(data.dt * 1000);
     var dateLine = currDate.getMonth() + '/' + currDate.getDate() + '/' + currDate.getFullYear();
     // weathHeadTxt.textContent += ' (' + dateLine + ')';
-    weathHeadEl.textContent += ' (' + dateLine + ')  ';
+    weathHeadEl.textContent += ' (' + dateLine + ')   ';
     //var weathDate = document.createElement('h2');
     //weathDate.textContent = dateLine;
     //weatherDisplayEl.appendChild(weathDate);
-    console.log(dateLine);
+
+
 
     var weatherType = data.weather[0].main;
     console.log(weatherType);
-    if (weatherType == "Mist") {
-        console.log('mist success');
-        //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
-        backImageEl.setAttribute('src','assets/images/mist.png');
-        //bodyEl.className = 'misty';
-    }
-    if (weatherType == 'Thunderstorm') {
-        console.log('thunderstorm success');
-        //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
-        backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
-    }
-    if (weatherType == 'Clouds') {
-        var cloudDescript = data.weather[0].description;
-        if (cloudDescript == 'few clouds') {
-            backImageEl.setAttribute('src','assets/images/few-clouds.png');
+    var currTime = parseInt(data.dt);
+    var sunrise = parseInt(data.sys.sunrise);
+    var sunset = parseInt(data.sys.sunset);
+    if (currTime > sunrise && currTime < sunset) { //day time
+        console.log('day time');
+        if (weatherType == "Mist") {
+            //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
+            backImageEl.setAttribute('src','assets/images/mist.png');
+            //bodyEl.className = 'misty';
         }
-        if (cloudDescript == 'scattered clouds') {
-            backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
+        if (weatherType == 'Thunderstorm') {
+            //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
+            backImageEl.setAttribute('src','assets/images/thunderstorm2.gif');
         }
-        if (cloudDescript == 'broken clouds') {
-            backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
+        if (weatherType == 'Fog') {
+            backImageEl.setAttribute('src','assets/images/rolling-fog.gif');
         }
-        if (cloudDescript == 'overcast clouds') {
-            backImageEl.setAttribute('src','assets/images/overcast.jpg');
+        if (weatherType == 'Clouds') {
+            var cloudDescript = data.weather[0].description;
+            console.log(cloudDescript);
+            if (cloudDescript == 'few clouds') {
+                backImageEl.setAttribute('src','assets/images/few-clouds.png');
+                //backImageEl.setAttribute('src','https://mixkit.imgix.net/videos/preview/mixkit-clouds-in-a-clear-sky-9468-0.jpg?q=80&auto=format%2Ccompress');
+            }
+            if (cloudDescript == 'scattered clouds') {
+                backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
+            }
+            if (cloudDescript == 'broken clouds') {
+                backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
+            }
+            if (cloudDescript == 'overcast clouds') {
+                backImageEl.setAttribute('src','assets/images/overcast4.jpg');
+            }
         }
+        if (weatherType == 'Rain') {
+            backImageEl.setAttribute('src', 'assets/images/rain4.gif');
+        }
+        if (weatherType == 'Drizzle') {
+            backImageEl.setAttribute('src','assets/images/drizzle2.gif');
+        }
+        if (weatherType == 'Clear') {
+            backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
+        }
+        if (weatherType == 'Snow') {
+            backImageEl.setAttribute('src','assets/images/snow.gif');
+        }        
     }
-    if (weatherType == 'Rain') {
-        console.log('rain success');
-        backImageEl.setAttribute('src', 'assets/images/rain2.gif');
+    else { //night time
+        console.log('night time');
+        if (weatherType == "Mist") {
+            //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
+            backImageEl.setAttribute('src','assets/images/mist-night.jpg');
+            //bodyEl.className = 'misty';
+        }
+        if (weatherType == 'Thunderstorm') {
+            //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
+            backImageEl.setAttribute('src','assets/images/thunderstorm-night.jpg');
+        }
+        if (weatherType == 'Clouds') {
+            var cloudDescript = data.weather[0].description;
+            console.log(cloudDescript);
+            if (cloudDescript == 'few clouds') {
+                backImageEl.setAttribute('src','assets/images/few-clouds-night.jpg');
+            }
+            if (cloudDescript == 'scattered clouds') {
+                backImageEl.setAttribute('src','assets/images/scattered-clouds-night.jpg');
+            }
+            if (cloudDescript == 'broken clouds') {
+                backImageEl.setAttribute('src','assets/images/broken-clouds-night.jpg');
+            }
+            if (cloudDescript == 'overcast clouds') {
+                backImageEl.setAttribute('src','assets/images/overcast-night.jpg');
+            }
+        }
+        if (weatherType == 'Rain') {
+            backImageEl.setAttribute('src', 'assets/images/rain-night.jpg');
+        }
+        if (weatherType == 'Drizzle') {
+            backImageEl.setAttribute('src','assets/images/drizzle-night.jpg');
+        }
+        if (weatherType == 'Clear') {
+            backImageEl.setAttribute('src','assets/images/clear-night.jpg');
+        }
+        if (weatherType == 'Snow') {
+            backImageEl.setAttribute('src','assets/images/snow-night.gif');
+        }
+
     }
-    if (weatherType == 'Drizzle') {
-        console.log('drizzle success');
-        backImageEl.setAttribute('src','assets/images/drizzle2.gif');
-    }
-    if (weatherType == 'Clear') {
-        console.log('clear success');
-        backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
-    }
-    if (weatherType == 'Snow') {
-        console.log('snow success');
-        backImageEl.setAttribute('src','assets/images/snow.gif');
-    }
+    
+
+
+    
 
     //temp
     var tempF = parseInt(data.main.temp);
-    console.log(tempF);
     //display Temp
     var currTemp = document.createElement('p');
     currTemp.textContent = 'Temp: ' + tempF + ' F'; 
@@ -163,7 +217,6 @@ function displayCurrWeather (data) {
     
     //wind speed
     var windSpeed = data.wind.speed;
-    console.log(windSpeed);
     //display wind speed
     var currWind = document.createElement('p');
     currWind.textContent = 'Wind: ' + windSpeed + ' MPH'; 
@@ -171,7 +224,6 @@ function displayCurrWeather (data) {
 
     //humidity
     var humidity = data.main.humidity;
-    console.log(humidity);
     //display humidity
     var currHumidity = document.createElement('p');
     currHumidity.textContent = 'Humidity: ' + humidity + '%'; 
@@ -182,7 +234,22 @@ function displayCurrWeather (data) {
     var iconUrl = 'http://openweathermap.org/img/w/' + iconID + '.png';
     var iconImg = document.createElement('img');
     iconImg.setAttribute('src',iconUrl);
+    iconImg.className = 'ml-1 mr-1';
     weathHeadEl.appendChild(iconImg);
+
+    // //thunderstorm
+    // if (iconID == '11d') {
+    //     backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
+    // }
+    // //drizzle
+    // if (iconID == '09d') {
+    //     backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
+    // }
+
+    var weathCondition = document.createElement('h4');
+    weathCondition.textContent = '   - ' + data.weather[0].description;
+    weathCondition.className = 'm-0';
+    weathHeadEl.appendChild(weathCondition);
 
     var coord = 'lat=' + data.coord.lat + '&lon=' + data.coord.lon;
     getForecast(coord);
@@ -192,7 +259,6 @@ function getForecast (coord) {
     var forecastLink = 'https://api.openweathermap.org/data/2.5/onecall?' + coord + '&appid=' + weatherKey + '&units=imperial';
     fetch(forecastLink)
         .then(function (response) {
-            console.log(response);
             if (response.status === 200) {
                 console.log('success');
                 //responseText.textContent = response.status;
@@ -212,7 +278,7 @@ function displayForecast (data) {
     //display UV index
     var currUVI = document.createElement('p');
     var uviValueEl = document.createElement('data');
-    uviValueEl.className = 'd-inline-flex p-1';
+    uviValueEl.className = 'd-inline-flex';
     if (uvi >= 0 && uvi <=2) {
         uviValueEl.style.background = 'green';
         uviValueEl.style.color = 'white';
@@ -233,15 +299,14 @@ function displayForecast (data) {
     for (var i = 1; i <= 5; i++) {
         //create card
         var dayCard = document.createElement('div');
-        dayCard.className = 'dayCard card';
+        dayCard.className = 'dayCard card p-2';
 
 
         //forecast date
         var futDate = new Date(data.daily[i].dt * 1000);
         var futDateLine = futDate.getMonth() + '/' + futDate.getDate() + '/' + futDate.getFullYear();
-        console.log(futDateLine);
         var foreDate = document.createElement('h4');
-        foreDate.setAttribute('class','card-title p-2 m-0');
+        foreDate.setAttribute('class','card-title pb-2 m-0');
         foreDate.textContent = futDateLine;
         dayCard.appendChild(foreDate);
 
