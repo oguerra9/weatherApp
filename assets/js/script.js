@@ -111,15 +111,8 @@ function getWeather (cityName) {
 function displayCurrWeather (data) {
     var currDate = new Date(data.dt * 1000);
     var dateLine = currDate.getMonth() + '/' + currDate.getDate() + '/' + currDate.getFullYear();
-    // weathHeadTxt.textContent += ' (' + dateLine + ')';
     weathHeadEl.textContent += ' (' + dateLine + ')   ';
-    //var weathDate = document.createElement('h2');
-    //weathDate.textContent = dateLine;
-    //weatherDisplayEl.appendChild(weathDate);
 
-
-
-    //
 
     //temp
     var tempF = parseInt(data.main.temp);
