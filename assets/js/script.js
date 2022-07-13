@@ -14,8 +14,13 @@ var searchCity = ''; //get value from search bar form
 var weatherKey = '7b1fd29f4dfe960f408499a3ed912ad0';
 var weatherLink = 'https://api.openweathermap.org/data/2.5/weather?q=' + searchCity + '&appid=' + weatherKey + '&units=imperial';
 
-
-searchCityStart = 'Atlanta';
+if (localStorage.getItem('cities') == null) {
+    searchCityStart = 'Atlanta';
+}
+else {
+    var citiesStart = JSON.parse(localStorage.getItem('cities'));
+    searchCityStart = citiesStart[0];
+}
 weatherLinkStart = 'https://api.openweathermap.org/data/2.5/weather?q=' + searchCityStart + '&appid=' + weatherKey + '&units=imperial';
 
 weathHeadEl.textContent = searchCityStart;
@@ -33,6 +38,7 @@ function citySearch(event) {
 
     event.preventDefault();
     searchCity = cityInputEl.value;
+    cityInputEl.value = '';
 
     //loading new searched city into local storage
     if ( localStorage.getItem('cities') == null ) {
@@ -60,7 +66,7 @@ function displayCities() {
         for (var i = 0; i < cities.length; i++) {
             var cityBtn = document.createElement('button');
             cityBtn.className = 'pastBtn mb-2';
-            cityBtn.innerHTML = cities[i];
+            cityBtn.innerHTML = capitalizeFirst(cities[i]);
             pastSearchesEl.appendChild(cityBtn);
 
             cityBtn.addEventListener("click", function(event) {
@@ -72,18 +78,13 @@ function displayCities() {
     }
 }
 
-// pastSearchesEl.addEventListener("click", function(event) {
-//     var element = event.target;
-//     getWeather(element.innerHTML);
-// });
-
 
 function getWeather (cityName) {
     weathHeadEl.innerHTML = '';
     weathInfoEl.innerHTML = '';
     forecastEl.innerHTML = '';
     pastSearchesEl.innerHTML = '';
-    weathHeadEl.textContent = cityName;
+    weathHeadEl.textContent = capitalizeFirst(cityName);
     weatherLink = 'https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&appid=' + weatherKey + '&units=imperial';
     displayCities();
 
@@ -94,11 +95,16 @@ function getWeather (cityName) {
                 console.log('success');
                 //responseText.textContent = response.status;
             }
+            else if(response.status === 404) {
+                window.alert('City could not be found. Please enter a valid city name.');
+                
+            }
             return response.json();
        })
        .then(function (data) {
             console.log(data);
             displayCurrWeather(data);
+            setBackground(data);
        });
 }
 
@@ -113,176 +119,7 @@ function displayCurrWeather (data) {
 
 
 
-    var weatherType = data.weather[0].main;
-    console.log(weatherType);
-    var currTime = parseInt(data.dt);
-    var sunrise = parseInt(data.sys.sunrise);
-    var sunset = parseInt(data.sys.sunset);
-    if (currTime > sunrise && currTime < sunset) { //day time
-        console.log('day time');
-        switch (weatherType) {
-            case 'Mist':
-                backImageEl.setAttribute('src','assets/images/mist.png');
-                break;
-            case 'Thunderstorm':
-                backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
-                break;
-            case 'Fog':
-                backImageEl.setAttribute('src','assets/images/rolling-fog.gif');
-                break;
-            case 'Clouds':
-                var cloudDescript = data.weather[0].description;
-                console.log(cloudDescript);
-                if (cloudDescript == 'few clouds') {
-                    backImageEl.setAttribute('src','assets/images/few-clouds.png');
-                    //backImageEl.setAttribute('src','https://mixkit.imgix.net/videos/preview/mixkit-clouds-in-a-clear-sky-9468-0.jpg?q=80&auto=format%2Ccompress');
-                }
-                if (cloudDescript == 'scattered clouds') {
-                    backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
-                }
-                if (cloudDescript == 'broken clouds') {
-                    backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
-                }
-                if (cloudDescript == 'overcast clouds') {
-                    backImageEl.setAttribute('src','assets/images/overcast4.jpg');
-                }
-                break;
-            case 'Rain':
-                backImageEl.setAttribute('src', 'assets/images/rain4.gif');
-                break;
-            case 'Drizzle':
-                backImageEl.setAttribute('src','assets/images/drizzle2.gif');
-                break;
-            case 'Clear':
-                backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
-                break;
-            case 'Snow':
-                backImageEl.setAttribute('src','assets/images/snow.gif');
-                break;
-
-
-        }
-        // if (weatherType == "Mist") {
-        //     //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
-        //     backImageEl.setAttribute('src','assets/images/mist.png');
-        //     //bodyEl.className = 'misty';
-        // }
-        // if (weatherType == 'Thunderstorm') {
-        //     //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
-        //     backImageEl.setAttribute('src','assets/images/thunderstorm2.gif');
-        // }
-        // if (weatherType == 'Fog') {
-        //     backImageEl.setAttribute('src','assets/images/rolling-fog.gif');
-        // }
-        // if (weatherType == 'Clouds') {
-        //     var cloudDescript = data.weather[0].description;
-        //     console.log(cloudDescript);
-        //     if (cloudDescript == 'few clouds') {
-        //         backImageEl.setAttribute('src','assets/images/few-clouds.png');
-        //         //backImageEl.setAttribute('src','https://mixkit.imgix.net/videos/preview/mixkit-clouds-in-a-clear-sky-9468-0.jpg?q=80&auto=format%2Ccompress');
-        //     }
-        //     if (cloudDescript == 'scattered clouds') {
-        //         backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
-        //     }
-        //     if (cloudDescript == 'broken clouds') {
-        //         backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
-        //     }
-        //     if (cloudDescript == 'overcast clouds') {
-        //         backImageEl.setAttribute('src','assets/images/overcast4.jpg');
-        //     }
-        // }
-        // if (weatherType == 'Rain') {
-        //     backImageEl.setAttribute('src', 'assets/images/rain4.gif');
-        // }
-        // if (weatherType == 'Drizzle') {
-        //     backImageEl.setAttribute('src','assets/images/drizzle2.gif');
-        // }
-        // if (weatherType == 'Clear') {
-        //     backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
-        // }
-        // if (weatherType == 'Snow') {
-        //     backImageEl.setAttribute('src','assets/images/snow.gif');
-        // }        
-    }
-    else { //night time
-        console.log('night time');
-        switch (weatherType) {
-            case 'Mist':
-                backImageEl.setAttribute('src','assets/images/mist-night.jpg');
-                break;
-            case 'Thunderstorm':
-                backImageEl.setAttribute('src','assets/images/thunderstorm-night.jpg');
-                break;
-            case 'Clouds':
-                var cloudDescript = data.weather[0].description;
-                console.log(cloudDescript);
-                if (cloudDescript == 'few clouds') {
-                    backImageEl.setAttribute('src','assets/images/few-clouds-night.jpg');
-                }
-                if (cloudDescript == 'scattered clouds') {
-                    backImageEl.setAttribute('src','assets/images/scattered-clouds-night.jpg');
-                }
-                if (cloudDescript == 'broken clouds') {
-                    backImageEl.setAttribute('src','assets/images/broken-clouds-night.jpg');
-                }
-                if (cloudDescript == 'overcast clouds') {
-                    backImageEl.setAttribute('src','assets/images/overcast-night.jpg');
-                }
-                break;
-            case 'Rain':
-                backImageEl.setAttribute('src', 'assets/images/rain-night.jpg');
-                break;
-            case 'Drizzle':
-                backImageEl.setAttribute('src','assets/images/drizzle-night.jpg');
-                break;
-            case 'Clear':
-                backImageEl.setAttribute('src','assets/images/clear-night.jpg');
-                break;
-            case 'Snow':
-                backImageEl.setAttribute('src','assets/images/snow-night.gif');
-                break;
-
-        }
-        // if (weatherType == "Mist") {
-        //     //currWeathEl.style.backgroundImage = "url('https://cloudfront-us-east-1.images.arcpublishing.com/gray/JFDZ7U577FFBTCTSLUKDQDSAYQ.png')";
-        //     backImageEl.setAttribute('src','assets/images/mist-night.jpg');
-        //     //bodyEl.className = 'misty';
-        // }
-        // if (weatherType == 'Thunderstorm') {
-        //     //currWeathEl.style.backgroundImage = "url('assets/images/thunderstorm.jpg')";
-        //     backImageEl.setAttribute('src','assets/images/thunderstorm-night.jpg');
-        // }
-        // if (weatherType == 'Clouds') {
-        //     var cloudDescript = data.weather[0].description;
-        //     console.log(cloudDescript);
-        //     if (cloudDescript == 'few clouds') {
-        //         backImageEl.setAttribute('src','assets/images/few-clouds-night.jpg');
-        //     }
-        //     if (cloudDescript == 'scattered clouds') {
-        //         backImageEl.setAttribute('src','assets/images/scattered-clouds-night.jpg');
-        //     }
-        //     if (cloudDescript == 'broken clouds') {
-        //         backImageEl.setAttribute('src','assets/images/broken-clouds-night.jpg');
-        //     }
-        //     if (cloudDescript == 'overcast clouds') {
-        //         backImageEl.setAttribute('src','assets/images/overcast-night.jpg');
-        //     }
-        // }
-        // if (weatherType == 'Rain') {
-        //     backImageEl.setAttribute('src', 'assets/images/rain-night.jpg');
-        // }
-        // if (weatherType == 'Drizzle') {
-        //     backImageEl.setAttribute('src','assets/images/drizzle-night.jpg');
-        // }
-        // if (weatherType == 'Clear') {
-        //     backImageEl.setAttribute('src','assets/images/clear-night.jpg');
-        // }
-        // if (weatherType == 'Snow') {
-        //     backImageEl.setAttribute('src','assets/images/snow-night.gif');
-        // }
-
-    }
-    
+    //
 
     //temp
     var tempF = parseInt(data.main.temp);
@@ -329,7 +166,6 @@ function getForecast (coord) {
         .then(function (response) {
             if (response.status === 200) {
                 console.log('success');
-                //responseText.textContent = response.status;
             }
             return response.json();
        })
@@ -338,6 +174,107 @@ function getForecast (coord) {
             displayForecast(data);
        });
 
+}
+
+function setBackground(data) {
+    var weatherType = data.weather[0].main;
+    console.log(weatherType);
+    var currTime = parseInt(data.dt);
+    var sunrise = parseInt(data.sys.sunrise);
+    var sunset = parseInt(data.sys.sunset);
+    console.log(currTime);
+    console.log(sunrise);
+    console.log(sunset);
+    if (currTime > sunrise && currTime < sunset) { //day time
+        console.log('day time');
+        switch (weatherType) {
+            case 'Mist':
+                backImageEl.setAttribute('src','assets/images/mist.png');
+                break;
+            case 'Thunderstorm':
+                backImageEl.setAttribute('src','assets/images/thunderstorm.jpg');
+                break;
+            case 'Fog':
+                backImageEl.setAttribute('src','assets/images/rolling-fog.gif');
+                break;
+            case 'Clouds':
+                var cloudDescript = data.weather[0].description;
+                console.log(cloudDescript);
+                if (cloudDescript == 'few clouds') {
+                    backImageEl.setAttribute('src','assets/images/few-clouds.png');
+                    //backImageEl.setAttribute('src','https://mixkit.imgix.net/videos/preview/mixkit-clouds-in-a-clear-sky-9468-0.jpg?q=80&auto=format%2Ccompress');
+                }
+                if (cloudDescript == 'scattered clouds') {
+                    backImageEl.setAttribute('src','assets/images/scattered-clouds.jpg');
+                }
+                if (cloudDescript == 'broken clouds') {
+                    backImageEl.setAttribute('src','assets/images/broken-clouds.jpg');
+                }
+                if (cloudDescript == 'overcast clouds') {
+                    backImageEl.setAttribute('src','assets/images/overcast4.jpg');
+                }
+                break;
+            case 'Rain':
+                backImageEl.setAttribute('src', 'assets/images/rain4.gif');
+                break;
+            case 'Drizzle':
+                backImageEl.setAttribute('src','assets/images/drizzle2.gif');
+                break;
+            case 'Clear':
+                backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
+                break;
+            case 'Snow':
+                backImageEl.setAttribute('src','assets/images/snow.gif');
+                break;
+            default:
+                backImageEl.setAttribute('src','assets/images/clear-sky.jpg');
+
+
+        }        
+    }
+    else { //night time
+        console.log('night time');
+        switch (weatherType) {
+            case 'Mist':
+                backImageEl.setAttribute('src','assets/images/mist-night.jpg');
+                break;
+            case 'Thunderstorm':
+                backImageEl.setAttribute('src','assets/images/thunderstorm-night.jpg');
+                break;
+            case 'Clouds':
+                var cloudDescript = data.weather[0].description;
+                console.log(cloudDescript);
+                if (cloudDescript == 'few clouds') {
+                    backImageEl.setAttribute('src','assets/images/few-clouds-night.jpg');
+                }
+                if (cloudDescript == 'scattered clouds') {
+                    backImageEl.setAttribute('src','assets/images/scattered-clouds-night.jpg');
+                }
+                if (cloudDescript == 'broken clouds') {
+                    backImageEl.setAttribute('src','assets/images/broken-clouds-night.jpg');
+                }
+                if (cloudDescript == 'overcast clouds') {
+                    backImageEl.setAttribute('src','assets/images/overcast-night.jpg');
+                }
+                break;
+            case 'Rain':
+                backImageEl.setAttribute('src', 'assets/images/rain-night.jpg');
+                break;
+            case 'Drizzle':
+                backImageEl.setAttribute('src','assets/images/drizzle-night.jpg');
+                break;
+            case 'Clear':
+                backImageEl.setAttribute('src','assets/images/clear-night3.jpg');
+                break;
+            case 'Snow':
+                backImageEl.setAttribute('src','assets/images/snow-night.gif');
+                break;
+            default:
+                backImageEl.setAttribute('src','assets/images/clear-night3.jpg');
+
+        }
+    }
+    
 }
 
 function displayForecast (data) {
@@ -410,6 +347,10 @@ function displayForecast (data) {
         forecastEl.appendChild(dayCard);
     }
 
+}
+
+function capitalizeFirst(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 //getWeather(weatherLink);
